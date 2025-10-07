@@ -2,7 +2,62 @@
 @tailwind components;
 @tailwind utilities;
 
-/* optional custom styles */
+/* Design system: dark theme defaults and reusable components */
+:root {
+  --ring: 0 0% 0%;
+}
+
 body {
-  @apply bg-neutral-900 text-white;
+  @apply bg-neutral-950 text-gray-100 font-sans antialiased;
+}
+
+@layer components {
+  .card {
+    @apply bg-neutral-900 border border-neutral-800 rounded-xl shadow-card;
+  }
+  .card-header {
+    @apply flex items-center justify-between mb-2;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center rounded-lg px-3 py-2 text-sm font-medium transition-colors;
+  }
+  .btn-primary {
+    @apply btn bg-brand-600 text-white hover:bg-brand-700;
+  }
+  .btn-outline {
+    @apply btn border border-neutral-700 bg-neutral-900 text-gray-100 hover:bg-neutral-800;
+  }
+  .btn-ghost {
+    @apply btn text-gray-300 hover:bg-neutral-800;
+  }
+  .input {
+    @apply w-full rounded-lg border border-neutral-700 bg-neutral-900 text-gray-100 px-3 py-2 text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-400;
+  }
+  .chip {
+    @apply inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium;
+  }
+  .chip-green {
+    @apply chip bg-green-500/10 text-green-400;
+  }
+  .chip-red {
+    @apply chip bg-red-500/10 text-red-400;
+  }
+  .chip-neutral {
+    @apply chip bg-neutral-800 text-gray-300;
+  }
+  .nav-link {
+    @apply flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-300 hover:bg-neutral-800 transition-colors;
+  }
+  .nav-link-active {
+    @apply bg-neutral-800 text-white font-medium;
+  }
+  .table {
+    @apply w-full text-sm;
+  }
+  .table thead th {
+    @apply bg-neutral-900 text-gray-400 font-medium text-xs uppercase tracking-wide;
+  }
+  .table tbody tr {
+    @apply border-b border-neutral-800;
+  }
 }

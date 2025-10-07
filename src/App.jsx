@@ -1,22 +1,34 @@
 import React from "react";
+import { Routes, Route, Outlet } from "react-router-dom";
+import TopNav from "./components/layout/TopNav";
+import Sidebar from "./components/layout/Sidebar";
 import Dashboard from "./pages/Dashboard"; // correct path
+import PortfolioPage from "./pages/PortfolioPage";
+import Settings from "./pages/Settings";
+
+function AppLayout() {
+  return (
+    <div className="min-h-screen bg-neutral-950">
+      <TopNav />
+      <div className="container flex gap-6 py-6">
+        <Sidebar />
+        <main className="flex-1 space-y-6">
+          <Outlet />
+        </main>
+      </div>
+    </div>
+  );
+}
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-neutral-900 text-white p-6">
-      {/* Navbar */}
-      <header className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-green-400">📊 Stock Dashboard</h1>
-        <nav className="space-x-6">
-          <a href="/" className="hover:text-green-400">Dashboard</a>
-          <a href="/portfolio" className="hover:text-green-400">Portfolio</a>
-          <a href="/settings" className="hover:text-green-400">Settings</a>
-        </nav>
-      </header>
-
-      {/* Render Dashboard */}
-      <Dashboard />
-    </div>
+    <Routes>
+      <Route element={<AppLayout />}>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/portfolio" element={<PortfolioPage />} />
+        <Route path="/settings" element={<Settings />} />
+      </Route>
+    </Routes>
   );
 }
 
