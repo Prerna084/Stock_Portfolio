@@ -1,5 +1,5 @@
-import React from "react";
-import {
+import React, { useState, useEffect } from "react";
+import { // eslint-disable-line
   ArrowUpRight,
   ArrowDownRight,
   TrendingUp,
@@ -37,19 +37,58 @@ const pieData = [
 
 const COLORS = ["#4f46e5", "#10b981", "#f59e0b"];
 
-const topGainers = [
-  { name: "TCS", price: "₹3,560", change: "+2.8%" },
-  { name: "Infosys", price: "₹1,490", change: "+1.9%" },
-  { name: "HDFC Bank", price: "₹1,620", change: "+1.5%" },
-];
-
-const topLosers = [
-  { name: "Reliance", price: "₹2,450", change: "-1.8%" },
-  { name: "ITC", price: "₹440", change: "-1.3%" },
-  { name: "SBI", price: "₹730", change: "-1.1%" },
-];
-
 export default function Dashboard() {
+  const [topGainers, setTopGainers] = useState([]);
+  const [loadingGainers, setLoadingGainers] = useState(true);
+  const [gainersError, setGainersError] = useState(null);
+
+  const [topLosers, setTopLosers] = useState([]);
+  const [loadingLosers, setLoadingLosers] = useState(true);
+  const [losersError, setLosersError] = useState(null);
+
+  useEffect(() => {
+    // Generic fetch function for our stock lists
+    const fetchStockData = async (
+      endpoint,
+      setData,
+      setLoading,
+      setError
+    ) => {
+      try {
+        // We assume you have a proxy setup to forward requests to the Finnhub API
+        // e.g., '/api/gainers' -> 'https://your-backend-or-finnhub-logic'
+        const response = await fetch(endpoint);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        // Taking the top 5 results from the API
+        setData(data.slice(0, 5));
+        setError(null);
+      } catch (err) {
+        console.error(`Failed to fetch from ${endpoint}:`, err);
+        setError("Failed to load data.");
+        setData([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Fetch both gainers and losers
+    fetchStockData(
+      "/api/gainers",
+      setTopGainers,
+      setLoadingGainers,
+      setGainersError
+    );
+    fetchStockData(
+      "/api/losers",
+      setTopLosers,
+      setLoadingLosers,
+      setLosersError
+    );
+  }, []); // Empty dependency array ensures this runs only once on mount
+
   return (
     <div className="space-y-10">
       {/* ====== Header ====== */}
@@ -129,9 +168,27 @@ export default function Dashboard() {
             Top Gainers
           </h2>
           <div className="space-y-3">
-            {topGainers.map((stock, i) => (
-              <StockCard key={i} {...stock} type="gainer" />
-            ))}
+            {loadingGainers ? (
+              <p className="text-gray-400">Loading...</p>
+            ) : gainersError ? (
+              <p className="text-red-400">{gainersError}</p>
+            ) : (
+              topGainers.map((stock) => (
+                <StockCard
+                  key={stock.symbol}
+                  name={stock.name}
+                  price={`${stock.currency === 'INR' ? '₹' : '$'}${stock.price.toFixed(2)}`}
+                  change={`+${stock.changesPercentage.toFixed(2)}%`}
+                  type="gainer"
+                  priceClass="text-green-400"
+                />
+              ))
+            )}
+            {!loadingGainers &&
+              !gainersError &&
+              topGainers.length === 0 && (
+                <p className="text-gray-400">No gainers data available.</p>
+              )}
           </div>
         </div>
 
@@ -140,16 +197,35 @@ export default function Dashboard() {
             Top Losers
           </h2>
           <div className="space-y-3">
-            {topLosers.map((stock, i) => (
-              <StockCard key={i} {...stock} type="loser" />
-            ))}
+            {loadingLosers ? (
+              <p className="text-gray-400">Loading...</p>
+            ) : losersError ? (
+              <p className="text-red-400">{losersError}</p>
+            ) : (
+              topLosers.map((stock) => (
+                <StockCard
+                  key={stock.symbol}
+                  name={stock.name}
+                  price={`${stock.currency === 'INR' ? '₹' : '$'}${stock.price.toFixed(2)}`}
+                  // Losers' change is negative, so we don't add a '+'
+                  change={`${stock.changesPercentage.toFixed(2)}%`}
+                  type="loser"
+                  priceClass="text-red-400"
+                />
+              ))
+            )}
+            {!loadingLosers &&
+              !losersError &&
+              topLosers.length === 0 && (
+                <p className="text-gray-400">No losers data available.</p>
+              )}
           </div>
         </div>
       </div>
 
       {/* ====== Extra Dashboard Section (from your 1st version) ====== */}
-      <div className="bg-gray-800 p-6 rounded-2xl shadow space-y-6">
-        <h2 className="text-xl font-semibold text-white">Best Prices to Buy</h2>
+      <div className="bg-gray-800 p-6 rounded-2xl shadow space-y-6 theme-card">
+        <h2 className="text-xl font-semibold text-white theme-heading">Best Prices to Buy</h2>
         <table className="w-full text-left text-gray-300">
           <thead className="text-gray-400 border-b border-gray-700">
             <tr>
@@ -186,12 +262,3 @@ export default function Dashboard() {
     </div>
   );
 }
-
-
-
-
-
-
-
-
-

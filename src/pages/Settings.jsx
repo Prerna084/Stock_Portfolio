@@ -1,6 +1,10 @@
 import React from "react";
+import { useTheme } from "../contexts/ThemeContext";
 
 export default function Settings() {
+  const { theme, setTheme, toggleTheme } = useTheme();
+  const isLight = theme === "light";
+
   return (
     <div className="space-y-6">
       <div>
@@ -63,9 +67,43 @@ export default function Settings() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-200">Theme</p>
-            <p className="text-xs text-gray-400">Dark neon theme is enabled.</p>
+            <p className="text-xs text-gray-400">
+              {isLight ? "Light mode is active." : "Dark mode is active."}
+            </p>
           </div>
-          <button className="btn-outline">Light mode (coming soon)</button>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setTheme("dark")}
+              className={`px-3 py-1.5 rounded-lg text-sm border ${
+                !isLight
+                  ? "bg-gray-900 text-white border-gray-700"
+                  : "bg-white text-gray-600 border-gray-300"
+              } ${!isLight ? "ring-2 ring-indigo-500" : ""}`}
+              disabled={!isLight ? true : false}
+            >
+              Dark
+            </button>
+            <button
+              type="button"
+              onClick={() => setTheme("light")}
+              className={`px-3 py-1.5 rounded-lg text-sm border ${
+                isLight
+                  ? "bg-white text-gray-800 border-gray-300"
+                  : "bg-gray-800 text-gray-200 border-gray-700"
+              } ${isLight ? "ring-2 ring-indigo-500" : ""}`}
+              disabled={isLight ? true : false}
+            >
+              Light
+            </button>
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="btn-outline"
+            >
+              Toggle
+            </button>
+          </div>
         </div>
       </div>
     </div>

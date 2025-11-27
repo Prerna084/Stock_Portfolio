@@ -24,7 +24,7 @@ export default function StatCard({ title, value, delta, positive = true, Icon })
           </span>
         ) : null}
       </div>
-      <div className="text-2xl font-semibold text-gray-100">{value}</div>
+      <div className="text-2xl font-semibold text-black">{value}</div>
     </div>
   );
 }

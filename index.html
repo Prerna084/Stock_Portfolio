@@ -1,6 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <script>
+      // Dev helper: filter noisy React Router future-flag warnings from the console.
+      // Keeps other console warnings intact.
+      (function () {
+        const origWarn = console.warn.bind(console);
+        console.warn = function (...args) {
+          try {
+            const text = args[0] && args[0].toString && args[0].toString();
+            if (typeof text === 'string' && text.includes('React Router Future Flag Warning')) {
+              return;
+            }
+          } catch (e) {
+            // ignore
+          }
+          origWarn(...args);
+        };
+      })();
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
