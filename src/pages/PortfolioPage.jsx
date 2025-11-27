@@ -8,16 +8,29 @@ const holdings = [
   { symbol: "AMZN", name: "Amazon Inc.", qty: 8, avg: 130.5, ltp: 138.91 },
 ];
 
-function currency(n) {
-  return `$${n.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+import { formatUSDToINRSync, getUSDtoINR, getCachedRate } from "../services/currency";
+
+function formatINR(n) {
+  if (n == null) return "—";
+  return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(n);
 }
 
 export default function PortfolioPage() {
-  const invested = holdings.reduce((sum, h) => sum + h.qty * h.avg, 0);
-  const current = holdings.reduce((sum, h) => sum + h.qty * h.ltp, 0);
-  const pnl = current - invested;
-  const pnlPct = invested ? (pnl / invested) * 100 : 0;
-  const positive = pnl >= 0;
+  const [rate, setRate] = React.useState(getCachedRate() || null);
+
+  React.useEffect(() => {
+    if (!rate) {
+      getUSDtoINR().then((r) => setRate(r)).catch(() => {});
+    }
+  }, [rate]);
+
+  // Compute numeric totals in INR when possible. If rate is not available yet,
+  // fall back to USD-based calculation but formatting will still show USD fallback.
+  const investedINR = holdings.reduce((sum, h) => sum + h.qty * h.avg * (rate || 1), 0);
+  const currentINR = holdings.reduce((sum, h) => sum + h.qty * h.ltp * (rate || 1), 0);
+  const pnlINR = currentINR - investedINR;
+  const pnlPct = investedINR ? (pnlINR / investedINR) * 100 : 0;
+  const positive = pnlINR >= 0;
 
   return (
     <div className="space-y-6">
@@ -28,11 +41,11 @@ export default function PortfolioPage() {
 
       {/* Summary stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <StatCard title="Current Value" value={currency(current)} />
-        <StatCard title="Invested" value={currency(invested)} />
+        <StatCard title="Current Value" value={formatINR(currentINR)} />
+        <StatCard title="Invested" value={formatINR(investedINR)} />
         <StatCard
           title="P/L"
-          value={`${currency(Math.abs(pnl))}`}
+          value={`${formatINR(Math.abs(pnlINR))}`}
           delta={`${pnlPct >= 0 ? "+" : "-"}${Math.abs(pnlPct).toFixed(2)}%`}
           positive={positive}
         />
@@ -61,15 +74,15 @@ export default function PortfolioPage() {
                 const neg = rowPnl < 0;
                 return (
                   <tr key={h.symbol} className="[&>td]:px-3 [&>td]:py-2">
-                    <td className="font-medium">{h.symbol}</td>
+                    <td className="font-medium text-gray-700">{h.symbol}</td>
                     <td className="text-gray-400">{h.name}</td>
-                    <td className="text-right">{h.qty}</td>
-                    <td className="text-right">{currency(h.avg)}</td>
-                    <td className="text-right">{currency(h.ltp)}</td>
+                    <td className="text-right text-gray-700">{h.qty}</td>
+                    <td className="text-right text-black">{formatINR(h.avg * (rate || 1))}</td>
+                    <td className="text-right text-black">{formatINR(h.ltp * (rate || 1))}</td>
                     <td className="text-right">
                       <span className={neg ? "chip-red" : "chip-green"}>
                         {neg ? "-" : "+"}
-                        {currency(Math.abs(rowPnl))}
+                        <span className="text-black">{formatINR(Math.abs(rowPnl) * (rate || 1))}</span>
                       </span>
                     </td>
                   </tr>
@@ -84,12 +97,12 @@ export default function PortfolioPage() {
               </tr>
               <tr className="[&>td]:px-3 [&>td]:py-2 font-semibold">
                 <td colSpan={3}></td>
-                <td className="text-right">{currency(invested)}</td>
-                <td className="text-right">{currency(current)}</td>
+                <td className="text-right text-black">{formatINR(investedINR)}</td>
+                <td className="text-right text-black">{formatINR(currentINR)}</td>
                 <td className="text-right">
                   <span className={positive ? "chip-green" : "chip-red"}>
                     {positive ? "+" : "-"}
-                    {currency(Math.abs(pnl))} ({`${positive ? "+" : "-"}${Math.abs(pnlPct).toFixed(2)}%`})
+                    <span className="text-black">{formatINR(Math.abs(pnlINR))}</span> ({`${positive ? "+" : "-"}${Math.abs(pnlPct).toFixed(2)}%`})
                   </span>
                 </td>
               </tr>

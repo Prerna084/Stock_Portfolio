@@ -1,4 +1,5 @@
 import React from "react";
+import { formatUSDToINRSync } from "../services/currency";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 
 const data = [
@@ -23,11 +24,11 @@ const Portfolio = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <div className="card glow-card">
           <h2 className="text-sm text-gray-400">Current Value</h2>
-          <p className="text-2xl font-semibold text-green-400">$2,28,000.47</p>
+          <p className="text-2xl font-semibold text-green-400">{formatUSDToINRSync(228000.47) || "₹228,000.47"}</p>
         </div>
         <div className="card glow-card">
           <h2 className="text-sm text-gray-400">Invested Value</h2>
-          <p className="text-2xl font-semibold text-gray-100">$2,15,570.00</p>
+          <p className="text-2xl font-semibold text-gray-100">{formatUSDToINRSync(215570.0) || "₹215,570.00"}</p>
         </div>
         <div className="card glow-card">
           <h2 className="text-sm text-gray-400">Total Returns</h2>
@@ -35,7 +36,7 @@ const Portfolio = () => {
         </div>
         <div className="card glow-card">
           <h2 className="text-sm text-gray-400">Profit / Loss</h2>
-          <p className="text-2xl font-semibold text-green-400">+$12,430</p>
+          <p className="text-2xl font-semibold text-green-400">{formatUSDToINRSync(12430) || "+₹12,430"}</p>
         </div>
       </div>
 
@@ -60,22 +61,22 @@ const Portfolio = () => {
               <tr>
                 <td>TCS</td>
                 <td>15</td>
-                <td>$3,100</td>
-                <td>$3,250</td>
+                <td>{formatUSDToINRSync(3100) || '₹3,100'}</td>
+                <td>{formatUSDToINRSync(3250) || '₹3,250'}</td>
                 <td className="text-green-400">+4.8%</td>
               </tr>
               <tr>
                 <td>Infosys</td>
                 <td>25</td>
-                <td>$1,450</td>
-                <td>$1,420</td>
+                <td>{formatUSDToINRSync(1450) || '₹1,450'}</td>
+                <td>{formatUSDToINRSync(1420) || '₹1,420'}</td>
                 <td className="text-red-400">-2.0%</td>
               </tr>
               <tr>
                 <td>Reliance</td>
                 <td>10</td>
-                <td>$2,200</td>
-                <td>$2,340</td>
+                <td>{formatUSDToINRSync(2200) || '₹2,200'}</td>
+                <td>{formatUSDToINRSync(2340) || '₹2,340'}</td>
                 <td className="text-green-400">+6.3%</td>
               </tr>
             </tbody>

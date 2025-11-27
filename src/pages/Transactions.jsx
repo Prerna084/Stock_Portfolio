@@ -7,6 +7,8 @@ const transactions = [
   { date: "07 Oct 2025", stock: "HDFC Bank", type: "Buy", qty: 6, price: 1550, amount: 9300 },
 ];
 
+import { formatUSDToINRSync } from "../services/currency";
+
 const Transactions = () => {
   return (
     <div className="p-6 space-y-6">
@@ -37,8 +39,8 @@ const Transactions = () => {
                   {tx.type}
                 </td>
                 <td>{tx.qty}</td>
-                <td>${tx.price}</td>
-                <td>${tx.amount}</td>
+                <td>{formatUSDToINRSync(tx.price) || `$${tx.price}`}</td>
+                <td>{formatUSDToINRSync(tx.amount) || `$${tx.amount}`}</td>
               </tr>
             ))}
           </tbody>
